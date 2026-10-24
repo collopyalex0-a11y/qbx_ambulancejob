@@ -24,6 +24,8 @@ lib.callback.register('qbx_ambulancejob:server:getPlayerStatus', function(source
 end)
 
 local function alertAmbulance(src, text)
+	-- Los Santos Life: ls_dispatch turns these into ps-dispatch calls while it runs.
+	if GetResourceState('ls_dispatch') == 'started' then return end
 	local ped = GetPlayerPed(src)
 	local coords = GetEntityCoords(ped)
 	local players = exports.qbx_core:GetQBPlayers()
@@ -134,6 +136,10 @@ lib.addCommand('911e', {
     }
 }, function(source, args)
 	local message = args.message or locale('info.civ_call')
+	-- Los Santos Life: the same as ps-dispatch's /311 while ls_dispatch runs.
+	if GetResourceState('ls_dispatch') == 'started' then
+		return exports.ls_dispatch:EmergencyCall(source, message, 'ems')
+	end
 	local ped = GetPlayerPed(source)
 	local coords = GetEntityCoords(ped)
 	local players = exports.qbx_core:GetQBPlayers()
